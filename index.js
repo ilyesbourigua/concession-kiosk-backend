@@ -22,30 +22,30 @@ else {
 	dbConnectionUrl  = process.env.MONGODB_URL || 'mongodb://localhost:27017/sampledb';
 }
 
-app.get('/ticketNumber', function(req, res, next) {
-	let newTicketNumber = 100;
+app.get('/userNumber', function(req, res, next) {
+	let newUserNumber = 100;
 	mongo.connect(dbConnectionUrl, (err, client) => {
 		if (err) {
 		  console.error(err);
 		  res.send({success: false, result: 9999});
 		} else {
 			const db = client.db(dbName);
-			const collection = db.collection('orders');
+			const collection = db.collection('users');
 			collection.find({}).count().then((n) => {
 				if (n > 0) {
-					collection.find().sort({ticketNumber:-1}).limit(1).toArray((err, items) => {
-						let highestTicket = items[0].ticketNumber;
-						newTicketNumber = highestTicket + 1;
-						collection.insertOne({ticketNumber: newTicketNumber, order: req.query}, (err, result) => {
+					collection.find().sort({userNumber:-1}).limit(1).toArray((err, items) => {
+						let highestTicket = items[0].userNumber;
+						newUserNumber = highestTicket + 1;
+						collection.insertOne({userNumber: newUserNumber, user: req.query}, (err, result) => {
 							console.log('err:' + err, ' result: ' + result);
 						});
-						res.send({success: true, result: newTicketNumber, order: req.query});
+						res.send({success: true, result: newUserNumber, user: req.query});
 					});
 				} else {
-					collection.insertOne({ticketNumber: newTicketNumber, order: req.query}, (err, result) => {
+					collection.insertOne({userNumber: newUserNumber, user: req.query}, (err, result) => {
 						console.log('err:' + err, ' result: ' + result);
 					});
-					res.send({success: true, result: newTicketNumber, order: req.query});
+					res.send({success: true, result: newUserNumber, user: req.query});
 				}
 			}).catch((err) => {
 				console.log(err);
@@ -56,8 +56,8 @@ app.get('/ticketNumber', function(req, res, next) {
 });
 
 /* for debugging purposes */
-app.get('/allorders', function (req, res, next) {
-	var ordersList;
+app.get('/allusers', function (req, res, next) {
+	var usersList;
 
 	mongo.connect(dbConnectionUrl, (err, client) => {
 		if (err) {
@@ -66,11 +66,11 @@ app.get('/allorders', function (req, res, next) {
 		}
 		console.log(dbConnectionUrl);
 		const db = client.db(dbName);
-		const collection = db.collection('orders');
+		const collection = db.collection('users');
 		collection.find().toArray((err, items) => {
-			ordersList = items;
-			console.log(ordersList);
-			res.send({success: true, result: ordersList});
+			usersList = items;
+			console.log(usersList);
+			res.send({success: true, result: usersList});
 		});
 	});
 });
@@ -100,4 +100,4 @@ app.use(function(err, req, res, next) {
 });
 
 app.listen(port, host);
-console.log('Concession Kiosk Backend started on: ' + host + ':' + port);
+console.log('Web app Backend started on: ' + host + ':' + port);
