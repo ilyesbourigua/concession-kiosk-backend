@@ -33,7 +33,7 @@ app.get('/userNumber', function(req, res, next) {
 			const collection = db.collection('users');
 			collection.find({}).count().then((n) => {
 				if (n > 0) {
-					collection.find().sort({userNumber:1}).limit(1).toArray((err, items) => {
+					collection.find().sort({userNumber:-1}).limit(1).toArray((err, items) => {
 						let highestuser = items[0].userNumber;
 						newUserNumber = highestuser + 1;
 						collection.insertOne({userNumber: newUserNumber, user: req.query}, (err, result) => {
